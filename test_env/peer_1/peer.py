@@ -34,9 +34,11 @@ class Peer:
             if ttl < 1:
                 return 
 
-            for addr in self.list_addr:
-                self.socket.sendto(msg, addr)
-                print('query sended to ', addr)
+            for addr_peer in self.list_addr:
+                if addr_peer == addr:
+                    continue
+                self.socket.sendto(msg, addr_peer)
+                print('query sended to ', addr_peer)
         else:
             print('query')
             msg = response[0:8]
