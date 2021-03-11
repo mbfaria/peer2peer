@@ -45,7 +45,7 @@ class Cliente:
                     for i in range(num_chunks):
                         chunk_id = int.from_bytes(response[4+(2*i):6+(2*i)],  byteorder='big')
                         if chunk_id not in list(self.available_chunks.keys()):
-                            available_chunks[chunk_id] = addr
+                            self.available_chunks[chunk_id] = addr
             
                 print('available_chunks= ', self.available_chunks)
                 print('available_chunks= ', set(list(self.available_chunks.keys())))
@@ -61,8 +61,8 @@ class Cliente:
             print('list_chunks_availables= ', list_chunks_availables)
             self.get(addr_peer, list_chunks_availables)
 
+        list_chunks_received = list()
         while True:
-            list_chunks_received = list()
             ready = select.select([self.socket], [], [], 5)
             if ready[0]:
                 response, addr = self.socket.recvfrom(2048)            
@@ -80,6 +80,8 @@ class Cliente:
 
 
                     list_chunks_received.append(chunk_id)
+                    print(list_chunks_received)
+
 
                     with open(f'output/new_chunk_{chunk_id}', 'wb') as f:
                         f.write(payload)
@@ -88,11 +90,20 @@ class Cliente:
                         log_f.write(f"{addr[0]}:{addr[1]} - {chunk_id}\n")
 
 
-                    if 
+
+                    print(set(self.list_chunks))
+                    print(set(list_chunks_received))
+                    if set(list_chunks_received) == set(self.list_chunks):
+                        print('All done.')
+                        break
 
             else:
+                print('timeout')
+                print(set(self.list_chunks))
+                print(set(list_chunks_received))
                 list_chunks_not_availables = set(self.list_chunks) - set(list_chunks_received)
 
+                print('list_chunks_not_availables=', list_chunks_not_availables)
                 for chunk_id in list_chunks_not_availables:
                     with open(f'output-{socket.gethostbyname(socket.gethostname())}.log', 'a') as log_f:
                         log_f.write(f"0.0.0.0:0 - {chunk_id}\n")                    
