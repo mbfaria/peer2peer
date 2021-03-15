@@ -83,7 +83,7 @@ class Cliente:
                     print(list_chunks_received)
 
 
-                    with open(f'output/new_chunk_{chunk_id}', 'wb') as f:
+                    with open(f'new_chunk_{chunk_id}', 'wb') as f:
                         f.write(payload)
                     
                     with open(f'output-{socket.gethostbyname(socket.gethostname())}.log', 'a') as log_f:
